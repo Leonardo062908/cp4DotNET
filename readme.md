@@ -4,15 +4,15 @@
 
 ![.NET](https://img.shields.io/badge/.NET-8.0-blue) ![Oracle](https://img.shields.io/badge/Oracle-EF%20Core-red) ![Swagger](https://img.shields.io/badge/Swagger-OpenAPI-green)
 
-## DescriÁ„o
+## Descri√ß√£o
 
-Este projeto implementa uma API Web em **ASP.NET Core 8** para CRUD completo da entidade **Moto**, integrando com **Oracle Database** atravÈs do **Entity Framework Core**. A API oferece:
+Este projeto implementa uma API Web em **ASP.NET Core 8** para CRUD completo da entidade **Moto**, integrando com **Oracle Database** atrav√©s do **Entity Framework Core**. A API oferece:
 
-* **GET**: m˙ltiplas rotas (todos, por ID, filtros por `statusMotoId`, busca por `modelo`).
-* **POST**: criaÁ„o de novas motos.
-* **PUT**: atualizaÁ„o de motos existentes.
-* **DELETE**: remoÁ„o de motos.
-* **OpenAPI/Swagger**: documentaÁ„o autom·tica das rotas.
+* **GET**: m√∫ltiplas rotas (todos, por ID, filtros por `statusMotoId`, busca por `modelo`).
+* **POST**: cria√ß√£o de novas motos.
+* **PUT**: atualiza√ß√£o de motos existentes.
+* **DELETE**: remo√ß√£o de motos.
+* **OpenAPI/Swagger**: documenta√ß√£o autom√°tica das rotas.
 
 ## Tecnologias
 
@@ -22,23 +22,23 @@ Este projeto implementa uma API Web em **ASP.NET Core 8** para CRUD completo da 
 * Microsoft.EntityFrameworkCore.Tools 9.0.5
 * Swashbuckle.AspNetCore 6.4.0
 
-## PrÈ-requisitos
+## Pr√©-requisitos
 
 * [.NET SDK 8.0](https://dotnet.microsoft.com/download/dotnet/8.0)
-* Oracle Database acessÌvel (vers„o 12c+)
-* Credenciais e string de conex„o para Oracle
+* Oracle Database acess√≠vel (vers√£o 12c+)
+* Credenciais e string de conex√£o para Oracle
 * Visual Studio 2022 ou VS Code
 
-## InstalaÁ„o
+## Instala√ß√£o
 
-1. **Clone o repositÛrio**
+1. **Clone o reposit√≥rio**
 
    ```bash
    git clone https://github.com/seu-usuario/moto-api.git
    cd moto-api
    ```
 
-2. **Configure a string de conex„o**
+2. **Configure a string de conex√£o**
 
    * Abra `appsettings.json` e ajuste:
 
@@ -73,25 +73,177 @@ Este projeto implementa uma API Web em **ASP.NET Core 8** para CRUD completo da 
 
 ## Rotas da API
 
-| MÈtodo | Endpoint                           | DescriÁ„o                                          |
+| M√©todo | Endpoint                           | Descri√ß√£o                                          |
 | ------ | ---------------------------------- | -------------------------------------------------- |
 | GET    | `/api/motos`                       | Lista todas as motos (opcional: `?statusMotoId=1`) |
 | GET    | `/api/motos/{id}`                  | Retorna a moto de ID especificado                  |
 | GET    | `/api/motos?statusMotoId={status}` | Filtra motos por `statusMotoId`                    |
-| GET    | `/api/motos/search?modelo={texto}` | Busca motos cujo `modelo` contÈm `{texto}`         |
+| GET    | `/api/motos/search?modelo={texto}` | Busca motos cujo `modelo` cont√©m `{texto}`         |
 | POST   | `/api/motos`                       | Cria uma nova moto                                 |
 | PUT    | `/api/motos/{id}`                  | Atualiza a moto de ID especificado                 |
 | DELETE | `/api/motos/{id}`                  | Remove a moto de ID especificado                   |
 
-## Boas pr·ticas & melhorias
+## Boas pr√°ticas & melhorias
 
 * **DTOs + AutoMapper** para desacoplar entidade do contrato da API.
-* **ValidaÁ„o** com DataAnnotations ou FluentValidation.
+* **Valida√ß√£o** com DataAnnotations ou FluentValidation.
 * **Versionamento de API** (`v1`, `v2`).
 * **Health Checks** em `/health`.
 * **Logging estruturado** (Serilog, Seq, etc.).
-* **Dockerfile** para containerizaÁ„o.
+* **Dockerfile** para containeriza√ß√£o.
 * **Testes automatizados** (xUnit, Moq, EF Core InMemory).
+
+## Docker
+
+Para facilitar o uso em diferentes ambientes e simplificar o deploy, a API est√° preparada para rodar em container Docker. Siga os passos abaixo:
+
+### 1. Construindo a imagem Docker
+
+Na raiz do projeto (onde est√° o `Dockerfile`), execute:
+
+```bash
+docker build -t motoapi:1.0 .
+```
+
+### 2. Testando localmente
+
+```bash
+docker run -d --name motoapi -p 8080:80 \
+  -e "ASPNETCORE_URLS=http://+:80" \
+  -e "ConnectionStrings__DefaultConnection=User Id=SEU_USUARIO;Password=SUA_SENHA;Data Source=HOST:PORT/SERVICE_NAME" \
+  motoapi:1.0
+```
+
+### 3. Enviando para o Docker Hub
+
+```bash
+docker tag motoapi:1.0 seuusuario/motoapi:1.0
+docker push seuusuario/motoapi:1.0
+```
+
+### 4. Executando na VM
+
+```bash
+docker pull seuusuario/motoapi:1.0
+docker run -d --name motoapi -p 80:80 \
+  -e "ASPNETCORE_URLS=http://+:80" \
+  -e "ASPNETCORE_ENVIRONMENT=Development" \
+  -e "ConnectionStrings__DefaultConnection=User Id=SEU_USUARIO;Password=SUA_SENHA;Data Source=HOST:PORT/SERVICE_NAME" \
+  seuusuario/motoapi:1.0
+```
+
+* **DTOs + AutoMapper** para desacoplar entidade do contrato da API.
+* **Valida√ß√£o** com DataAnnotations ou FluentValidation.
+* **Versionamento de API** (`v1`, `v2`).
+* **Health Checks** em `/health`.
+* **Logging estruturado** (Serilog, Seq, etc.).
+* **Dockerfile** para containeriza√ß√£o.
+* **Testes automatizados** (xUnit, Moq, EF Core InMemory).
+
+## Scripts de Provisionamento e Deploy
+
+### Scripts Azure CLI para cria√ß√£o da VM
+
+````powershell
+# 1. Login na Azure
+az login
+
+# 2. Registro do provedor de rede (Microsoft.Network)
+az provider register --namespace Microsoft.Network
+
+# 3. Cria√ß√£o do Resource Group
+az group create `
+  --name rg-motoapi `
+  --location brazilsouth
+
+# 4. Cria√ß√£o da VM Ubuntu 22.04 com SSH autom√°tico e NSG
+docker rm -f motoapi || true
+az vm create `
+  --resource-group rg-motoapi `
+  --name vm-motoapi `
+  --image Ubuntu2204 `
+  --size Standard_B1ms `
+  --admin-username azureuser `
+  --generate-ssh-keys `
+  --nsg nsg-motoapi
+
+# 5. Abertura das portas HTTP e HTTPS
+az network nsg rule create `
+  --resource-group rg-motoapi `
+  --nsg-name nsg-motoapi `
+  --name Allow-HTTP `
+  --protocol tcp `
+  --priority 1001 `
+  --destination-port-range 80
+
+az network nsg rule create `
+  --resource-group rg-motoapi `
+  --nsg-name nsg-motoapi `
+  --name Allow-HTTPS `
+  --protocol tcp `
+  --priority 1002 `
+  --destination-port-range 443
+```{}
+
+### Dockerfile Multi-stage
+
+```dockerfile
+# Stage 1: build
+group AS build
+FROM mcr.microsoft.com/dotnet/sdk:8.0-alpine AS build
+WORKDIR /src
+
+COPY *.sln .
+COPY MotoApi/*.csproj ./MotoApi/
+RUN dotnet restore
+
+COPY MotoApi/. ./MotoApi/
+WORKDIR /src/MotoApi
+RUN dotnet publish -c Release -o /app/publish
+
+# Stage 2: runtime
+FROM mcr.microsoft.com/dotnet/aspnet:8.0-alpine
+WORKDIR /app
+
+# For√ßar Kestrel a ouvir na porta 80
+ENV ASPNETCORE_URLS=http://+:80
+
+# Criar usu√°rio n√£o-root
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+USER appuser
+
+COPY --from=build /app/publish ./
+EXPOSE 80
+ENTRYPOINT ["dotnet","MotoApi.dll"]
+````
+
+### Deploy no Docker Hub e Execu√ß√£o na VM
+
+1. **Build e Push local**
+
+   ```powershell
+   docker build -t motoapi:1.0 .
+   docker tag motoapi:1.0 gavmarques/motoapi:1.0
+   docker push gavmarques/motoapi:1.0
+   ```
+
+2. **Pull e execu√ß√£o na VM**
+
+   ```bash
+   ssh azureuser@<IP_DA_VM>
+   docker pull gavmarques/motoapi:1.0
+   docker run -d \
+     --name motoapi \
+     -p 80:80 \
+     -e "ASPNETCORE_ENVIRONMENT=Development" \
+     -e "ConnectionStrings__DefaultConnection=User Id=rm554889;Password=100805;Data Source=oracle.fiap.com.br:1521/ORCL" \
+     gavmarques/motoapi:1.0
+   ```
+
+3. **Testes**
+
+   * API JSON: `http://<IP_DA_VM>/api/motos`
+   * Swagger UI: `http://<IP_DA_VM>/swagger/index.html`
 
 > *Gabriel Marques RM554889 - Desenvolvedor*
 > *Leonardo Mateus RM556629 - Desenvolvedor*
