@@ -151,6 +151,7 @@
     <Property Name="sonar.host.url">http://localhost:9000</Property>
     <Property Name="sonar.sourceEncoding">UTF-8</Property>
     <Property Name="sonar.exclusions">**/bin/**,**/obj/**,**/.vs/**,**/Migrations/**,**/*.md,**/*.http</Property>
+    <Property Name="sonar.coverage.exclusions">**/*.cs</Property>
   </LocalSettings>
   <ScannerOptsSettings />
   <AnalyzersSettings>

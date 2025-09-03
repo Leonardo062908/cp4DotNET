@@ -1,5 +1,6 @@
 ﻿C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Controller\MotosController.cs
 C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Data\AppDbContext.cs
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Dtos\MotoDtos.cs
 C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Migrations\20250521235357_InitialCreate.cs
 C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Migrations\20250521235357_InitialCreate.Designer.cs
 C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Migrations\AppDbContextModelSnapshot.cs
