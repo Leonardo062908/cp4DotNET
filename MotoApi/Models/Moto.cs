@@ -13,12 +13,12 @@ namespace MotoApi.Models
         [Required]
         [Column("modelo")]
         [MaxLength(50)]
-        public string Modelo { get; set; }
+        public required string Modelo { get; set; } = string.Empty;
 
         [Required]
         [Column("placa")]
         [MaxLength(7)]
-        public string Placa { get; set; }
+        public required string Placa { get; set; } = string.Empty;
 
         [Column("statusmoto_id_status")]
         public int StatusMotoId { get; set; }
