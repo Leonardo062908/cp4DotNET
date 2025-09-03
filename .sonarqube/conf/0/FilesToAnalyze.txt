@@ -1,0 +1,15 @@
+﻿C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Controller\MotosController.cs
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Data\AppDbContext.cs
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Migrations\20250521235357_InitialCreate.cs
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Migrations\20250521235357_InitialCreate.Designer.cs
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Migrations\AppDbContextModelSnapshot.cs
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Models\Moto.cs
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Program.cs
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\obj\Debug\net8.0\MotoApi.GlobalUsings.g.cs
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\obj\Debug\net8.0\.NETCoreApp,Version=v8.0.AssemblyAttributes.cs
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\obj\Debug\net8.0\MotoApi.AssemblyInfo.cs
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\obj\Debug\net8.0\MotoApi.MvcApplicationPartsAssemblyInfo.cs
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\appsettings.Development.json
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\appsettings.json
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\MotoApi.http
+C:\Users\leona\Downloads\MotoApi\MotoApi\MotoApi\Properties\launchSettings.json
