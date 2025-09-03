@@ -2,83 +2,114 @@
 using Microsoft.EntityFrameworkCore;
 using MotoApi.Data;
 using MotoApi.Models;
+using MotoApi.Dtos;
 
-namespace MotoApi.Controllers
+namespace MotoApi.Controllers;
+
+[ApiController]
+[Route("api/motos")]
+public class MotosController : ControllerBase
 {
-    [ApiController]
-    [Route("api/[controller]")]
-    public class MotosController : ControllerBase
+    private readonly AppDbContext _context;
+    public MotosController(AppDbContext context) => _context = context;
+
+    // GET: api/motos?statusMotoId=1
+    [HttpGet]
+    [ProducesResponseType(typeof(IEnumerable<MotoResponseDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Get([FromQuery] int? statusMotoId, CancellationToken ct)
     {
-        private readonly AppDbContext _context;
-        public MotosController(AppDbContext context) => _context = context;
+        var q = _context.Motos.AsNoTracking().AsQueryable();
 
-        // GET: api/motos?statusMotoId=1
-        [HttpGet]
-        public async Task<ActionResult<IEnumerable<Moto>>> GetMotos([FromQuery] int? statusMotoId)
+        if (statusMotoId.HasValue)
+            q = q.Where(m => m.StatusMotoId == statusMotoId.Value);
+
+        var list = await q
+            .Select(m => new MotoResponseDto(m.IdMoto, m.Modelo, m.Placa, m.StatusMotoId))
+            .ToListAsync(ct);
+
+        return Ok(list);
+    }
+
+    // GET: api/motos/{id}
+    [HttpGet("{id:int}")]
+    [ProducesResponseType(typeof(MotoResponseDto), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> GetById([FromRoute] int id, CancellationToken ct)
+    {
+        var m = await _context.Motos.AsNoTracking()
+                                    .FirstOrDefaultAsync(x => x.IdMoto == id, ct);
+        if (m is null) return NotFound();
+
+        return Ok(new MotoResponseDto(m.IdMoto, m.Modelo, m.Placa, m.StatusMotoId));
+    }
+
+    // GET: api/motos/search?modelo=FAN
+    [HttpGet("search")]
+    [ProducesResponseType(typeof(IEnumerable<MotoResponseDto>), StatusCodes.Status200OK)]
+    public async Task<IActionResult> Search([FromQuery] string? modelo, CancellationToken ct)
+    {
+        var q = _context.Motos.AsNoTracking().AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(modelo))
         {
-            var query = _context.Motos.AsQueryable();
-            if (statusMotoId.HasValue)
-                query = query.Where(m => m.StatusMotoId == statusMotoId.Value);
-            return Ok(await query.ToListAsync());
+            var term = modelo.Trim().ToUpperInvariant();
+            q = q.Where(m => m.Modelo.ToUpper()!.Contains(term));
         }
 
-        // GET: api/motos/{id}
-        [HttpGet("{id}")]
-        public async Task<ActionResult<Moto>> GetMoto(int id)
-        {
-            var moto = await _context.Motos.FindAsync(id);
-            if (moto == null) return NotFound();
-            return Ok(moto);
-        }
+        var list = await q.Select(m => new MotoResponseDto(m.IdMoto, m.Modelo, m.Placa, m.StatusMotoId))
+                          .ToListAsync(ct);
+        return Ok(list);
+    }
 
-        // GET: api/motos/search?modelo=
-        [HttpGet("search")]
-        public async Task<ActionResult<IEnumerable<Moto>>> SearchMotos([FromQuery] string modelo)
+    // POST: api/motos
+    [HttpPost]
+    [ProducesResponseType(typeof(MotoResponseDto), StatusCodes.Status201Created)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<IActionResult> Post([FromBody] MotoCreateDto dto, CancellationToken ct)
+    {
+        // [ApiController] já faz ModelState validation; chega aqui se válido
+        var m = new Moto
         {
-            if (string.IsNullOrWhiteSpace(modelo))
-                return BadRequest("Parâmetro 'modelo' obrigatório.");
-            var result = await _context.Motos
-                                       .Where(m => m.Modelo.Contains(modelo))
-                                       .ToListAsync();
-            return Ok(result);
-        }
+            Modelo = dto.Modelo.Trim().ToUpperInvariant(),
+            Placa = dto.Placa.Trim().ToUpperInvariant(),
+            StatusMotoId = dto.StatusMotoId
+        };
 
-        // POST: api/motos
-        [HttpPost]
-        public async Task<ActionResult<Moto>> CreateMoto(Moto moto)
-        {
-            _context.Motos.Add(moto);
-            await _context.SaveChangesAsync();
-            return CreatedAtAction(nameof(GetMoto), new { id = moto.IdMoto }, moto);
-        }
+        _context.Motos.Add(m);
+        await _context.SaveChangesAsync(ct);
 
-        // PUT: api/motos/{id}
-        [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateMoto(int id, Moto moto)
-        {
-            if (id != moto.IdMoto)
-                return BadRequest("ID de rota diferente do objeto.");
+        var resp = new MotoResponseDto(m.IdMoto, m.Modelo, m.Placa, m.StatusMotoId);
+        return CreatedAtAction(nameof(GetById), new { id = m.IdMoto }, resp);
+    }
 
-            _context.Entry(moto).State = EntityState.Modified;
-            try { await _context.SaveChangesAsync(); }
-            catch (DbUpdateConcurrencyException)
-            {
-                if (!await _context.Motos.AnyAsync(e => e.IdMoto == id))
-                    return NotFound();
-                throw;
-            }
-            return NoContent();
-        }
+    // PUT: api/motos/{id}
+    [HttpPut("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Put([FromRoute] int id, [FromBody] MotoUpdateDto dto, CancellationToken ct)
+    {
+        var m = await _context.Motos.FirstOrDefaultAsync(x => x.IdMoto == id, ct);
+        if (m is null) return NotFound();
 
-        // DELETE: api/motos/{id}
-        [HttpDelete("{id}")]
-        public async Task<IActionResult> DeleteMoto(int id)
-        {
-            var moto = await _context.Motos.FindAsync(id);
-            if (moto == null) return NotFound();
-            _context.Motos.Remove(moto);
-            await _context.SaveChangesAsync();
-            return NoContent();
-        }
+        m.Modelo = dto.Modelo.Trim().ToUpperInvariant();
+        m.Placa = dto.Placa.Trim().ToUpperInvariant();
+        m.StatusMotoId = dto.StatusMotoId;
+
+        await _context.SaveChangesAsync(ct);
+        return NoContent();
+    }
+
+    // DELETE: api/motos/{id}
+    [HttpDelete("{id:int}")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> Delete([FromRoute] int id, CancellationToken ct)
+    {
+        var m = await _context.Motos.FindAsync([id], ct);
+        if (m is null) return NotFound();
+
+        _context.Motos.Remove(m);
+        await _context.SaveChangesAsync(ct);
+        return NoContent();
     }
 }
